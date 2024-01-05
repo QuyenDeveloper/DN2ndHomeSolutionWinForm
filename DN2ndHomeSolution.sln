@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.7.34031.279
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DN2ndHomeLibrary", "DN2ndHomeLibrary\DN2ndHomeLibrary.csproj", "{D9A668CF-ED8D-4197-B8F4-6EF57DDA79B7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DN2ndHomeWinFormsApp", "DN2ndHomeWinFormsApp\DN2ndHomeWinFormsApp.csproj", "{F075547B-7B21-415C-9C04-45EC27137602}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D9A668CF-ED8D-4197-B8F4-6EF57DDA79B7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D9A668CF-ED8D-4197-B8F4-6EF57DDA79B7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D9A668CF-ED8D-4197-B8F4-6EF57DDA79B7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D9A668CF-ED8D-4197-B8F4-6EF57DDA79B7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F075547B-7B21-415C-9C04-45EC27137602}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F075547B-7B21-415C-9C04-45EC27137602}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F075547B-7B21-415C-9C04-45EC27137602}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F075547B-7B21-415C-9C04-45EC27137602}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {6983A743-21E0-4C97-BE4A-3EDF325EFBA3}
+	EndGlobalSection
+EndGlobal
