@@ -17,5 +17,6 @@ namespace DN2ndHomeLibrary.Repository
         public void Remove(User user) => UserManagement.Instance.Remove(user);
         public void Update(User user) => UserManagement.Instance.Update(user);
         public User Login(string username, string password) => UserManagement.Instance.Login(username, password);
+        public bool isExist(string username) => UserManagement.Instance.isExist(username);
     }
 }

@@ -179,6 +179,7 @@
             btnPostPreviousImage.TabIndex = 29;
             btnPostPreviousImage.Text = "<< <<";
             btnPostPreviousImage.UseVisualStyleBackColor = true;
+            btnPostPreviousImage.Click += btnPostPreviousImage_Click;
             // 
             // btnPostNextImage
             // 
@@ -188,6 +189,7 @@
             btnPostNextImage.TabIndex = 28;
             btnPostNextImage.Text = ">> >>";
             btnPostNextImage.UseVisualStyleBackColor = true;
+            btnPostNextImage.Click += btnPostNextImage_Click;
             // 
             // pbPostImage
             // 
@@ -215,6 +217,7 @@
             btnSavePost.TabIndex = 26;
             btnSavePost.Text = "Lưu tin";
             btnSavePost.UseVisualStyleBackColor = true;
+            btnSavePost.Click += btnSavePost_Click;
             // 
             // tbPostTitle
             // 
@@ -425,6 +428,7 @@
             btnSavedPost.TabIndex = 13;
             btnSavedPost.Text = "Tin lưu";
             btnSavedPost.UseVisualStyleBackColor = true;
+            btnSavedPost.Click += btnSavedPost_Click;
             // 
             // btnAdmin
             // 

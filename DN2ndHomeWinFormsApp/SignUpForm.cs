@@ -38,6 +38,7 @@ namespace DN2ndHomeWinFormsApp
             if (CheckVal() == 1) return;
             try
             {
+                if (_userRepository.isExist(tbName.Text) != null) { MessageBox.Show("User already exist!!"); return; }
                 SaveUser();
                 MessageBox.Show("Sign up success!!!", "Success", MessageBoxButtons.OK);
                 DialogResult = DialogResult.OK;

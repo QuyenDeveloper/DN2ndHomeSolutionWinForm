@@ -13,6 +13,7 @@ namespace DN2ndHomeLibrary.Repository
         IEnumerable<CartNew> GetListsByUserID(int id);
         void Add(CartNew carNew);
         CartNew GetByID(int id);
-        void Remove(int id);
+        void Remove(int prdID, int userID);
+        bool IsPrdInfoSaved(int prdId, int userId);
     }
 }

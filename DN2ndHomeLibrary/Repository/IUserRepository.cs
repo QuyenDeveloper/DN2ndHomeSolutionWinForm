@@ -16,5 +16,6 @@ namespace DN2ndHomeLibrary.Repository
         void Remove(User user);
         void Update(User user);
         User Login(string username, string password);
+        bool isExist(string username);
     }
 }

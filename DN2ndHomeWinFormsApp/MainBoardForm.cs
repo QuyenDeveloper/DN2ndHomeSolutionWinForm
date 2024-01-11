@@ -1,4 +1,5 @@
 ﻿using DN2ndHomeLibrary.DataAccess;
+using DN2ndHomeLibrary.DataManagament;
 using DN2ndHomeLibrary.Repository;
 using System;
 using System.Collections.Generic;
@@ -23,6 +24,9 @@ namespace DN2ndHomeWinFormsApp
         private IImageRepository _imageRepository;
         private ICarNewRepository _carNewRepository;
         private CustomGroupBox selectedGroupBox = null;
+        private PrdInfo selectedPost = null;
+        List<Image> selectedPostImages = new List<Image>();
+        private int currentImageIndex = 0;
         private const int WM_NCHITTEST = 0x84;
         private const int HTCLIENT = 0x1;
         private const int HTCAPTION = 0x2;
@@ -60,9 +64,9 @@ namespace DN2ndHomeWinFormsApp
         private void MainBoardForm_Load(object sender, EventArgs e)
         {
             LoadCurrentUser();
-
             LoadPosts();
         }
+
         public class CustomGroupBox : GroupBox
         {
             private bool isSelected = false;
@@ -102,7 +106,7 @@ namespace DN2ndHomeWinFormsApp
             tbName.Text = CurrentUser.UserName;
             tbEmail.Text = CurrentUser.Email;
             tbPhone.Text = CurrentUser.Phone;
-            //if (CurrentUser.UserLevel == 1) btnAdmin.Visible = false;
+            if(CurrentUser.UserLevel == 1) btnAdmin.Visible = false;
         }
         private Image ConvertByteArrayToImage(byte[] bytes)
         {
@@ -147,8 +151,8 @@ namespace DN2ndHomeWinFormsApp
             Hide();
             if (manageAccountForm.ShowDialog() == DialogResult.OK)
             {
-                Show();
                 LoadCurrentUser();
+                Show();
             }
             else
             {
@@ -157,6 +161,7 @@ namespace DN2ndHomeWinFormsApp
         }
         private void LoadPosts()
         {
+            tabPaneTinDang.Text = "Tin đăng";
             int postLocation = 7;
             try
             {
@@ -218,7 +223,7 @@ namespace DN2ndHomeWinFormsApp
         }//done
         private async void PostDetailForm(PrdInfo post, int postLocation)
         {
-            tabPaneTinDang.Controls.Clear();
+            var syncContext = SynchronizationContext.Current;
             await Task.Run(() =>
             {
                 User author = GetAuthor(post.UserId ?? 0);
@@ -280,16 +285,25 @@ namespace DN2ndHomeWinFormsApp
                     btnPostNextImage.Enabled = true;
                     groupBox.IsSelected = true;
                     selectedGroupBox = groupBox;
-                    LoadPostDetail(post, author, images, 0);
+                    selectedPost = post;
+                    LoadPostDetail(post, author, images);
                 });
-                tabPaneTinDang.Invoke((MethodInvoker)delegate
+                syncContext.Post(_ =>
                 {
                     tabPaneTinDang.Controls.Add(groupBox);
-                });
+                }, null);
             });
         }//done
-        private async void LoadPostDetail(PrdInfo post, User author, List<Img> images, int currentImageIndex)
+        private async void LoadPostDetail(PrdInfo post, User author, List<Img> images)
         {
+            if (_carNewRepository.IsPrdInfoSaved(post.PrdId, (int)CurrentUser.UserId))
+            {
+                btnSavePost.Text = "Hủy lưu";
+            }
+            else
+            {
+                btnSavePost.Text = "Lưu";
+            }
             tbPostTitle.Text = post.PrdTitle;
             tbPostDetail.Text = post.PrdDetail;
             tbPostAddress.Text = post.DetailAddress + ", " + GetAddress(post.DistrictId ?? 0, post.WardId ?? 0);
@@ -301,58 +315,16 @@ namespace DN2ndHomeWinFormsApp
             tbPosterEmail.Text = author.Email;
             if (images.Count > 0)
             {
-                List<Image> i = new List<Image>();
+                selectedPostImages.Clear();
                 await Task.Run(() =>
                 {
                     foreach (Img img in images)
                     {
-                        i.Add(ConvertByteArrayToImage(img.Img1));
+                        selectedPostImages.Add(ConvertByteArrayToImage(img.Img1));
                     }
                 });
-                pbPostImage.Image = i[0];
-                lbPostImageCount.Text = (currentImageIndex + 1) + "/" + i.Count.ToString();
-
-                btnPostNextImage.Click += btnPostNextImage_Click;
-                void btnPostNextImage_Click(object sender, EventArgs e)
-                {
-                    currentImageIndex = (currentImageIndex + 1) % i.Count;
-                    UpdatePictureBoxWithCurrentImage();
-                    UpdateButtonStates();
-                }
-
-                btnPostPreviousImage.Click += btnPostPreviousImage_Click;
-                void btnPostPreviousImage_Click(object sender, EventArgs e)
-                {
-                    currentImageIndex = (currentImageIndex - 1 + i.Count) % i.Count;
-                    UpdatePictureBoxWithCurrentImage();
-                    UpdateButtonStates();
-                }
-                void UpdateButtonStates()
-                {
-                    btnPostNextImage.Enabled = (currentImageIndex < i.Count - 1);
-                    btnPostPreviousImage.Enabled = (currentImageIndex > 0);
-                }
-                void UpdatePictureBoxWithCurrentImage()
-                {
-                    lbPostImageCount.Text = (currentImageIndex + 1) + "/" + i.Count.ToString();
-                    pbPostImage.Image = i[currentImageIndex];
-                }
-                btnSavedPost.Click += BtnSavedPost_Click;
-                void BtnSavedPost_Click(object sender, EventArgs e)
-                {
-                    try
-                    {
-                        CartNew cartNew = new CartNew { 
-                            IdPrd = post.PrdId,
-                            UserId = post.UserId,
-                        };
-                        _carNewRepository.Add(cartNew);
-                        MessageBox.Show("Lưu thành công");
-                    }catch(Exception ex)
-                    {
-                        MessageBox.Show("Error : " + ex.Message);
-                    }
-                }
+                pbPostImage.Image = selectedPostImages[0];
+                lbPostImageCount.Text = (currentImageIndex + 1) + "/" + selectedPostImages.Count.ToString();
             }
             else
             {
@@ -362,7 +334,6 @@ namespace DN2ndHomeWinFormsApp
                 pbPostImage.Image = Properties.Resources.empty;
             }
         }//done
-
         private void btnMainBoardClose_Click(object sender, EventArgs e)
         {
             DialogResult = DialogResult.Cancel;
@@ -373,6 +344,7 @@ namespace DN2ndHomeWinFormsApp
         }//done
         private void btnMainBoardRefresh_Click(object sender, EventArgs e)
         {
+            tabPaneTinDang.Controls.Clear();
             LoadPosts();
         }//done
         private void toolStrip1_MouseDown(object sender, MouseEventArgs e)
@@ -400,23 +372,120 @@ namespace DN2ndHomeWinFormsApp
                 FindForm().Location = newLocation;
             }
         }
-
         private void btnTinDangCuaToi_Click(object sender, EventArgs e)
         {
+            tabPaneTinDang.Controls.Clear();
+            tabPaneTinDang.Text = "Tin đăng của tôi";
             int postLocation = 7;
             try
             {
                 var list = _postRepository.GetPrdInfosByUserID(CurrentUser.UserId);
-                foreach (var post in list)
+                if (!list.Any())
                 {
-                    PostDetailForm(post, postLocation);
-                    postLocation += 120;
+                    Label lb = new Label();
+                    lb.Text = "EMPTY";
+                    lb.Dock = DockStyle.Fill;
+                    lb.TextAlign = ContentAlignment.MiddleCenter;
+                    tabPaneTinDang.Controls.Add(lb);
+                }
+                else
+                {
+                    foreach (var post in list)
+                    {
+                        PostDetailForm(post, postLocation);
+                        postLocation += 120;
+                    }
                 }
             }
             catch (Exception ex)
             {
                 MessageBox.Show("Error: " + ex.Message + " at loadPost");
             }
+        }
+        private void btnSavedPost_Click(object sender, EventArgs e)
+        {
+            tabPaneTinDang.Controls.Clear();
+            tabPaneTinDang.Text = "Tin đã lưu";
+            int postLocation = 7;
+
+            var carNewList = _carNewRepository.GetListsByUserID(CurrentUser.UserId);
+
+            try
+            {
+                if (!carNewList.Any())
+                {
+                    Label lb = new Label();
+                    lb.Text = "EMPTY";
+                    lb.Dock = DockStyle.Fill;
+                    lb.TextAlign = ContentAlignment.MiddleCenter;
+                    tabPaneTinDang.Controls.Add(lb);
+                }
+                else
+                {
+                    foreach (var carNew in carNewList)
+                    {
+                        var post = _postRepository.GetPrdInfoByID((int)carNew.IdPrd);
+                        if (post != null)
+                        {
+                            PostDetailForm(post, postLocation);
+                            postLocation += 120;
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error: " + ex.Message + " at loadPost");
+            }
+        }
+        private void btnSavePost_Click(object sender, EventArgs e)
+        {
+            if (selectedPost != null)
+            {
+                try
+                {
+                    bool isSaved = _carNewRepository.IsPrdInfoSaved(selectedPost.PrdId, CurrentUser.UserId);
+                    if (!isSaved)
+                    {
+                        CartNew cartNew = new CartNew
+                        {
+                            IdPrd = selectedPost.PrdId,
+                            UserId = CurrentUser.UserId,
+                        };
+                        _carNewRepository.Add(cartNew);
+                        MessageBox.Show("Lưu thành công");
+
+                        btnSavePost.Text = "Hủy lưu";
+                    }
+                    else
+                    {
+                        _carNewRepository.Remove(selectedPost.PrdId, CurrentUser.UserId);
+                        MessageBox.Show("Hủy thành công");
+
+                        btnSavePost.Text = "Lưu";
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Error : " + ex.Message);
+                }
+            }
+        }
+        private void btnPostNextImage_Click(object sender, EventArgs e)
+        {
+            currentImageIndex = (currentImageIndex + 1) % selectedPostImages.Count;
+            lbPostImageCount.Text = (currentImageIndex + 1) + "/" + selectedPostImages.Count.ToString();
+            pbPostImage.Image = selectedPostImages[currentImageIndex];
+            btnPostNextImage.Enabled = (currentImageIndex < selectedPostImages.Count - 1);
+            btnPostPreviousImage.Enabled = (currentImageIndex > 0);
+        }
+        private void btnPostPreviousImage_Click(object sender, EventArgs e)
+        {
+            currentImageIndex = (currentImageIndex - 1 + selectedPostImages.Count) % selectedPostImages.Count;
+            lbPostImageCount.Text = (currentImageIndex + 1) + "/" + selectedPostImages.Count.ToString();
+            pbPostImage.Image = selectedPostImages[currentImageIndex];
+            btnPostNextImage.Enabled = (currentImageIndex < selectedPostImages.Count - 1);
+            btnPostPreviousImage.Enabled = (currentImageIndex > 0);
         }
     }
 }

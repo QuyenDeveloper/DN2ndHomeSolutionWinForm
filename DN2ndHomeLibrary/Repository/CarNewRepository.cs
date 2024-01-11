@@ -14,6 +14,7 @@ namespace DN2ndHomeLibrary.Repository
         public IEnumerable<CartNew> GetListsByUserID(int id) => CarNewManagement.Instance.GetListsByUserID(id);
         public void Add(CartNew carNew) => CarNewManagement.Instance.Add(carNew);
         public CartNew GetByID(int id) => CarNewManagement.Instance.GetByID(id);
-        public void Remove(int id) => CarNewManagement.Instance.Remove(id);
+        public void Remove(int prdID, int userID) => CarNewManagement.Instance.Remove(prdID,userID);
+        public bool IsPrdInfoSaved(int prdId, int userId) => CarNewManagement.Instance.IsPrdInfoSaved(prdId, userId);
     }
 }

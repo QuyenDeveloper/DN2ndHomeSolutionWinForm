@@ -159,7 +159,7 @@ namespace DN2ndHomeWinFormsApp
                     openFileDialog1.ShowDialog();
                     string filePath = openFileDialog1.FileName;
                     pictureBox1.Image = Image.FromFile(filePath);
-                    pictureBox1.Image.Tag = Path.GetFileName(filePath);
+                    pictureBox1.Tag = Path.GetFileName(filePath);
                 }
                 catch (Exception ex)
                 {

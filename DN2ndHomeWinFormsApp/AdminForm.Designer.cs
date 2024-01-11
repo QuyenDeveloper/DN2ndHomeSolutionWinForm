@@ -31,6 +31,7 @@
             wardDataGridView = new DataGridView();
             tabControl1 = new TabControl();
             tPUserMa = new TabPage();
+            cbUserLevel = new ComboBox();
             btnUserInsert = new Button();
             tbUserSearch = new TextBox();
             label10 = new Label();
@@ -38,7 +39,6 @@
             btnUserDelete = new Button();
             btnUserUpdate = new Button();
             tbCreatedDate = new TextBox();
-            tbUserLV = new TextBox();
             tbPassword = new TextBox();
             tbEmail = new TextBox();
             tbPhone = new TextBox();
@@ -160,6 +160,7 @@
             // tPUserMa
             // 
             tPUserMa.AllowDrop = true;
+            tPUserMa.Controls.Add(cbUserLevel);
             tPUserMa.Controls.Add(btnUserInsert);
             tPUserMa.Controls.Add(tbUserSearch);
             tPUserMa.Controls.Add(label10);
@@ -167,7 +168,6 @@
             tPUserMa.Controls.Add(btnUserDelete);
             tPUserMa.Controls.Add(btnUserUpdate);
             tPUserMa.Controls.Add(tbCreatedDate);
-            tPUserMa.Controls.Add(tbUserLV);
             tPUserMa.Controls.Add(tbPassword);
             tPUserMa.Controls.Add(tbEmail);
             tPUserMa.Controls.Add(tbPhone);
@@ -190,6 +190,14 @@
             tPUserMa.TabIndex = 0;
             tPUserMa.Text = "User Managament";
             tPUserMa.UseVisualStyleBackColor = true;
+            // 
+            // cbUserLevel
+            // 
+            cbUserLevel.FormattingEnabled = true;
+            cbUserLevel.Location = new Point(811, 274);
+            cbUserLevel.Name = "cbUserLevel";
+            cbUserLevel.Size = new Size(125, 28);
+            cbUserLevel.TabIndex = 42;
             // 
             // btnUserInsert
             // 
@@ -256,13 +264,6 @@
             tbCreatedDate.ReadOnly = true;
             tbCreatedDate.Size = new Size(125, 27);
             tbCreatedDate.TabIndex = 35;
-            // 
-            // tbUserLV
-            // 
-            tbUserLV.Location = new Point(811, 277);
-            tbUserLV.Name = "tbUserLV";
-            tbUserLV.Size = new Size(125, 27);
-            tbUserLV.TabIndex = 34;
             // 
             // tbPassword
             // 
@@ -384,6 +385,7 @@
             // 
             // userDataGridView
             // 
+            userDataGridView.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
             userDataGridView.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             userDataGridView.Location = new Point(6, 69);
             userDataGridView.Name = "userDataGridView";
@@ -1074,7 +1076,6 @@
         private Button btnUserDelete;
         private Button btnUserUpdate;
         private TextBox tbCreatedDate;
-        private TextBox tbUserLV;
         private TextBox tbPassword;
         private TextBox tbEmail;
         private TextBox tbPhone;
@@ -1154,5 +1155,6 @@
         private ToolStripButton btnAdminMinimize;
         private ToolStripButton btnAdminBack;
         private ToolStripButton btnAdminRefresh;
+        private ComboBox cbUserLevel;
     }
 }

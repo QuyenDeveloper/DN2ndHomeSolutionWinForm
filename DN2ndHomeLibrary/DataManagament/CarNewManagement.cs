@@ -92,20 +92,44 @@ namespace DN2ndHomeLibrary.DataManagament
             }
             return carNew;
         }
-        public void Remove(int id)
+        public void Remove(int prdID, int userID)
         {
             try
             {
-                CartNew carNew = GetByID(id);
                 using (var dbContext = new dn2ndhomeManagementContext())
                 {
-                    dbContext.CartNews.Remove(carNew);
-                    dbContext.SaveChanges();
+                    var cartToRemove = dbContext.CartNews.FirstOrDefault(cart => cart.IdPrd == prdID && cart.UserId == userID);
+
+                    if (cartToRemove != null)
+                    {
+                        dbContext.CartNews.Remove(cartToRemove);
+                        dbContext.SaveChanges();
+                    }
+                    else
+                    {
+                        Console.WriteLine($"CartNew with IdPrd = {prdID} and UserId = {userID} not found.");
+                    }
                 }
             }
             catch (Exception ex)
             {
                 throw new Exception(ex.Message);
+            }
+        }
+
+        public bool IsPrdInfoSaved(int prdId, int userId)
+        {
+            try
+            {
+                using (var dbContext = new dn2ndhomeManagementContext())
+                {
+                    var isSaved = dbContext.CartNews.Any(cart => cart.IdPrd == prdId && cart.UserId == userId);
+                    return isSaved;
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error checking if PrdInfo is saved: {ex.Message}");
             }
         }
     }

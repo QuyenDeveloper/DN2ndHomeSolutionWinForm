@@ -148,7 +148,6 @@ namespace DN2ndHomeLibrary.DataManagament
                 throw new Exception(ex.Message);
             }
         }
-
         public User Login(string username, string password)
         {
             User user = null;
@@ -164,6 +163,21 @@ namespace DN2ndHomeLibrary.DataManagament
                 throw new Exception(ex.Message);
             }
             return user;
+        }
+        public bool isExist(string username)
+        {
+            try
+            {
+                using (var dbContext = new dn2ndhomeManagementContext())
+                {
+                    var isExist = dbContext.Users.Any(user => user.UserName == username);
+                    return isExist;
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error checking if PrdInfo is saved: {ex.Message}");
+            }
         }
     }
 }

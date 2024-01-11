@@ -26,7 +26,7 @@ namespace DN2ndHomeWinFormsApp
         {
             InitializeComponent();
         }
-        private async void btnLogin_Click(object sender, EventArgs e)
+        private void btnLogin_Click(object sender, EventArgs e)
         {
             string username = tbUserName.Text;
             string password = tbPassword.Text;
@@ -36,7 +36,31 @@ namespace DN2ndHomeWinFormsApp
                 User user = _userRepository.Login(username, password);
                 if (user == null)
                 {
-                    MessageBox.Show(this, "Wrong info or user doesn't exist", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show( "Sai mật khậu hoặc người dùng không tồn tại");
+                }
+                else if (user.UserLevel == 2)
+                {
+                    ConfirmAdminPasswordForm confirmAdminPasswordForm = new ConfirmAdminPasswordForm();
+                    if(confirmAdminPasswordForm.ShowDialog() == DialogResult.OK)
+                    {
+                        MainBoardForm board = new MainBoardForm(user,
+                        _userRepository,
+                        _avatarReposity,
+                        _postRepository,
+                        _districtRepository,
+                        _wardRepository,
+                        _imageRepository,
+                        _carNewRepository);
+                        Hide();
+                        if (board.ShowDialog() == DialogResult.OK)
+                        {
+                            Show();
+                        }
+                        else
+                        {
+                            Close();
+                        }
+                    }
                 }
                 else
                 {

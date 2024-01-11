@@ -127,7 +127,7 @@ namespace DN2ndHomeWinFormsApp
                 tbPhone.DataBindings.Clear();
                 tbEmail.DataBindings.Clear();
                 tbPassword.DataBindings.Clear();
-                tbUserLV.DataBindings.Clear();
+                cbUserLevel.DataBindings.Clear();
                 tbCreatedDate.DataBindings.Clear();
 
                 tbUserID.DataBindings.Add("Text", userBindingSource, "UserID");
@@ -136,7 +136,17 @@ namespace DN2ndHomeWinFormsApp
                 tbPhone.DataBindings.Add("Text", userBindingSource, "Phone");
                 tbEmail.DataBindings.Add("Text", userBindingSource, "Email");
                 tbPassword.DataBindings.Add("Text", userBindingSource, "Password");
-                tbUserLV.DataBindings.Add("Text", userBindingSource, "UserLevel");
+
+                cbUserLevel.DisplayMember = "Text";
+                cbUserLevel.ValueMember = "Value";
+                cbUserLevel.DataSource = new List<object>
+                {
+                    new { Text = "User", Value = 1 },
+                    new { Text = "Admin", Value = 2 }
+                };
+                cbUserLevel.DataBindings.Add("SelectedValue", userBindingSource, "UserLevel");
+                cbUserLevel.SelectedValueChanged += cbUserLevel_SelectedValueChanged;
+
                 tbCreatedDate.DataBindings.Add("Text", userBindingSource, "CreateAt");
 
                 userDataGridView.DataSource = userBindingSource;
@@ -152,6 +162,12 @@ namespace DN2ndHomeWinFormsApp
                 MessageBox.Show($"Error: {ex.Message}\nStackTrace: {ex.StackTrace}", "Error Loading User List");
             }
         } //done 
+
+        private void cbUserLevel_SelectedValueChanged(object sender, EventArgs e)
+        {
+            User user = (User)userDataGridView.CurrentRow.DataBoundItem;
+            user.UserLevel = (int)cbUserLevel.SelectedValue;
+        }
         private User GetSelectedUser()
         {
             User user = null;
@@ -165,7 +181,7 @@ namespace DN2ndHomeWinFormsApp
                     Phone = tbPhone.Text,
                     Email = tbEmail.Text,
                     Password = tbPassword.Text,
-                    UserLevel = int.Parse(tbUserLV.Text),
+                    UserLevel = int.Parse(cbUserLevel.SelectedValue.ToString()),
                     CreateAt = DateTime.Parse(tbCreatedDate.Text)
                 };
             }
@@ -591,5 +607,6 @@ namespace DN2ndHomeWinFormsApp
         {
             Loading();
         }
+
     }
 }
