@@ -10,6 +10,7 @@ namespace DN2ndHomeWinFormsApp
         DistrictRepository _districtRepository = new DistrictRepository();
         WardRepository _wardRepository = new WardRepository();
         ImageRepository _imageRepository = new ImageRepository();
+        CarNewRepository _carNewRepository = new CarNewRepository();
         private const int WM_NCHITTEST = 0x84;
         private const int HTCLIENT = 0x1;
         private const int HTCAPTION = 0x2;
@@ -45,7 +46,8 @@ namespace DN2ndHomeWinFormsApp
                         _postRepository,
                         _districtRepository,
                         _wardRepository,
-                        _imageRepository);
+                        _imageRepository,
+                        _carNewRepository);
                     Hide();
                     if (board.ShowDialog() == DialogResult.OK)
                     {

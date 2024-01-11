@@ -21,6 +21,7 @@ namespace DN2ndHomeWinFormsApp
         private IDistrictRepository _districtRepository;
         private IWardRepository _wardRepository;
         private IImageRepository _imageRepository;
+        private ICarNewRepository _carNewRepository;
         private CustomGroupBox selectedGroupBox = null;
         private const int WM_NCHITTEST = 0x84;
         private const int HTCLIENT = 0x1;
@@ -39,7 +40,8 @@ namespace DN2ndHomeWinFormsApp
             IPostRepository postRepository,
             IDistrictRepository districtRepository,
             IWardRepository wardRepository,
-            IImageRepository imageRepository
+            IImageRepository imageRepository,
+            ICarNewRepository carNewRepository
             )
         {
             InitializeComponent();
@@ -50,6 +52,7 @@ namespace DN2ndHomeWinFormsApp
             _districtRepository = districtRepository;
             _wardRepository = wardRepository;
             _imageRepository = imageRepository;
+            _carNewRepository = carNewRepository;
             tabPaneTinDang.AutoScroll = true;
             tabPaneTinDang.HorizontalScroll.Visible = false;
             tabPaneTinDang.VerticalScroll.Visible = true;
@@ -334,6 +337,22 @@ namespace DN2ndHomeWinFormsApp
                     lbPostImageCount.Text = (currentImageIndex + 1) + "/" + i.Count.ToString();
                     pbPostImage.Image = i[currentImageIndex];
                 }
+                btnSavedPost.Click += BtnSavedPost_Click;
+                void BtnSavedPost_Click(object sender, EventArgs e)
+                {
+                    try
+                    {
+                        CartNew cartNew = new CartNew { 
+                            IdPrd = post.PrdId,
+                            UserId = post.UserId,
+                        };
+                        _carNewRepository.Add(cartNew);
+                        MessageBox.Show("Lưu thành công");
+                    }catch(Exception ex)
+                    {
+                        MessageBox.Show("Error : " + ex.Message);
+                    }
+                }
             }
             else
             {
@@ -343,6 +362,7 @@ namespace DN2ndHomeWinFormsApp
                 pbPostImage.Image = Properties.Resources.empty;
             }
         }//done
+
         private void btnMainBoardClose_Click(object sender, EventArgs e)
         {
             DialogResult = DialogResult.Cancel;

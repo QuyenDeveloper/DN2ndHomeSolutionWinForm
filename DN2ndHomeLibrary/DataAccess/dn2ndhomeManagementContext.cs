@@ -57,9 +57,7 @@ namespace DN2ndHomeLibrary.DataAccess
 
                 entity.ToTable("cart_new");
 
-                entity.Property(e => e.CartId)
-                    .ValueGeneratedNever()
-                    .HasColumnName("cart_id");
+                entity.Property(e => e.CartId).HasColumnName("cart_id");
 
                 entity.Property(e => e.IdPrd).HasColumnName("id_prd");
 

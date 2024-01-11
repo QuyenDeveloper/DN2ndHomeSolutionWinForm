@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(LoginForm));
             label1 = new Label();
             label2 = new Label();
             label3 = new Label();
@@ -44,6 +45,7 @@
             // label1
             // 
             label1.AutoSize = true;
+            label1.BackColor = Color.Transparent;
             label1.Font = new Font("Segoe UI", 16F, FontStyle.Bold, GraphicsUnit.Point);
             label1.Location = new Point(117, 36);
             label1.Name = "label1";
@@ -105,6 +107,7 @@
             // 
             // toolStrip1
             // 
+            toolStrip1.BackColor = SystemColors.Control;
             toolStrip1.ImageScalingSize = new Size(20, 20);
             toolStrip1.Items.AddRange(new ToolStripItem[] { toolStripButtonLoginClose, toolStripButtonLoginMinimize });
             toolStrip1.Location = new Point(0, 0);
@@ -141,9 +144,10 @@
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
+            BackgroundImage = (Image)resources.GetObject("$this.BackgroundImage");
+            BackgroundImageLayout = ImageLayout.Stretch;
             ClientSize = new Size(365, 250);
             ControlBox = false;
-            Controls.Add(toolStrip1);
             Controls.Add(btnSignIn);
             Controls.Add(btnLogin);
             Controls.Add(tbPassword);
@@ -151,6 +155,7 @@
             Controls.Add(label3);
             Controls.Add(label2);
             Controls.Add(label1);
+            Controls.Add(toolStrip1);
             DoubleBuffered = true;
             FormBorderStyle = FormBorderStyle.FixedSingle;
             MaximizeBox = false;

@@ -62,6 +62,7 @@
             toolStripMenuItem3 = new ToolStripMenuItem();
             toolStripMenuItem4 = new ToolStripMenuItem();
             groupBox2 = new GroupBox();
+            btnSavedPost = new Button();
             btnAdmin = new Button();
             btnDangXuat = new Button();
             btnTinDangCuaToi = new Button();
@@ -75,7 +76,6 @@
             btnMainBoardClose = new ToolStripButton();
             btnMainBoardMinimize = new ToolStripButton();
             btnMainBoardRefresh = new ToolStripButton();
-            btnSavedPost = new Button();
             groupBox1.SuspendLayout();
             tabControl1.SuspendLayout();
             groupBox3.SuspendLayout();
@@ -417,6 +417,15 @@
             groupBox2.TabIndex = 7;
             groupBox2.TabStop = false;
             // 
+            // btnSavedPost
+            // 
+            btnSavedPost.Location = new Point(3, 396);
+            btnSavedPost.Name = "btnSavedPost";
+            btnSavedPost.Size = new Size(140, 29);
+            btnSavedPost.TabIndex = 13;
+            btnSavedPost.Text = "Tin lưu";
+            btnSavedPost.UseVisualStyleBackColor = true;
+            // 
             // btnAdmin
             // 
             btnAdmin.Location = new Point(3, 471);
@@ -557,15 +566,6 @@
             btnMainBoardRefresh.Size = new Size(29, 24);
             btnMainBoardRefresh.Text = "Refresh";
             btnMainBoardRefresh.Click += btnMainBoardRefresh_Click;
-            // 
-            // btnSavedPost
-            // 
-            btnSavedPost.Location = new Point(3, 396);
-            btnSavedPost.Name = "btnSavedPost";
-            btnSavedPost.Size = new Size(140, 29);
-            btnSavedPost.TabIndex = 13;
-            btnSavedPost.Text = "Tin lưu";
-            btnSavedPost.UseVisualStyleBackColor = true;
             // 
             // MainBoardForm
             // 
