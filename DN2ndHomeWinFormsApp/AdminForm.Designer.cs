@@ -113,6 +113,11 @@
             label25 = new Label();
             label24 = new Label();
             label23 = new Label();
+            toolStrip1 = new ToolStrip();
+            btnAdminClose = new ToolStripButton();
+            btnAdminMinimize = new ToolStripButton();
+            btnAdminBack = new ToolStripButton();
+            btnAdminRefresh = new ToolStripButton();
             ((System.ComponentModel.ISupportInitialize)wardDataGridView).BeginInit();
             tabControl1.SuspendLayout();
             tPUserMa.SuspendLayout();
@@ -124,6 +129,7 @@
             ((System.ComponentModel.ISupportInitialize)districtDataGridView).BeginInit();
             tPWardMa.SuspendLayout();
             groupBox2.SuspendLayout();
+            toolStrip1.SuspendLayout();
             SuspendLayout();
             // 
             // wardDataGridView
@@ -144,7 +150,7 @@
             tabControl1.Controls.Add(tPPostMa);
             tabControl1.Controls.Add(tPDistrictMa);
             tabControl1.Controls.Add(tPWardMa);
-            tabControl1.Location = new Point(12, 12);
+            tabControl1.Location = new Point(12, 28);
             tabControl1.Name = "tabControl1";
             tabControl1.SelectedIndex = 0;
             tabControl1.Size = new Size(1096, 426);
@@ -967,15 +973,70 @@
             label23.TabIndex = 1;
             label23.Text = "Ward ID";
             // 
+            // toolStrip1
+            // 
+            toolStrip1.ImageScalingSize = new Size(20, 20);
+            toolStrip1.Items.AddRange(new ToolStripItem[] { btnAdminClose, btnAdminMinimize, btnAdminBack, btnAdminRefresh });
+            toolStrip1.Location = new Point(0, 0);
+            toolStrip1.Name = "toolStrip1";
+            toolStrip1.Size = new Size(1118, 27);
+            toolStrip1.TabIndex = 1;
+            toolStrip1.Text = "toolStrip1";
+            toolStrip1.MouseDown += toolStrip1_MouseDown;
+            toolStrip1.MouseMove += toolStrip1_MouseMove;
+            // 
+            // btnAdminClose
+            // 
+            btnAdminClose.Alignment = ToolStripItemAlignment.Right;
+            btnAdminClose.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            btnAdminClose.Image = Properties.Resources.close;
+            btnAdminClose.ImageTransparentColor = Color.Magenta;
+            btnAdminClose.Name = "btnAdminClose";
+            btnAdminClose.Size = new Size(29, 24);
+            btnAdminClose.Text = "Close";
+            btnAdminClose.Click += btnAdminClose_Click;
+            // 
+            // btnAdminMinimize
+            // 
+            btnAdminMinimize.Alignment = ToolStripItemAlignment.Right;
+            btnAdminMinimize.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            btnAdminMinimize.Image = Properties.Resources.minimize_sign;
+            btnAdminMinimize.ImageTransparentColor = Color.Magenta;
+            btnAdminMinimize.Name = "btnAdminMinimize";
+            btnAdminMinimize.Size = new Size(29, 24);
+            btnAdminMinimize.Text = "Minimize";
+            // 
+            // btnAdminBack
+            // 
+            btnAdminBack.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            btnAdminBack.Image = Properties.Resources.left_arrow;
+            btnAdminBack.ImageTransparentColor = Color.Magenta;
+            btnAdminBack.Name = "btnAdminBack";
+            btnAdminBack.Size = new Size(29, 24);
+            btnAdminBack.Text = "Back";
+            btnAdminBack.Click += btnAdminBack_Click;
+            // 
+            // btnAdminRefresh
+            // 
+            btnAdminRefresh.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            btnAdminRefresh.Image = Properties.Resources.refresh;
+            btnAdminRefresh.ImageTransparentColor = Color.Magenta;
+            btnAdminRefresh.Name = "btnAdminRefresh";
+            btnAdminRefresh.Size = new Size(29, 24);
+            btnAdminRefresh.Text = "Refresh";
+            btnAdminRefresh.Click += btnAdminRefresh_Click;
+            // 
             // AdminForm
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(1118, 450);
+            ClientSize = new Size(1118, 455);
+            ControlBox = false;
+            Controls.Add(toolStrip1);
             Controls.Add(tabControl1);
+            FormBorderStyle = FormBorderStyle.FixedSingle;
             Name = "AdminForm";
-            Text = "AdminForm";
-            FormClosed += AdminForm_FormClosed;
+            StartPosition = FormStartPosition.CenterScreen;
             Load += AdminForm_Load;
             ((System.ComponentModel.ISupportInitialize)wardDataGridView).EndInit();
             tabControl1.ResumeLayout(false);
@@ -994,7 +1055,10 @@
             tPWardMa.PerformLayout();
             groupBox2.ResumeLayout(false);
             groupBox2.PerformLayout();
+            toolStrip1.ResumeLayout(false);
+            toolStrip1.PerformLayout();
             ResumeLayout(false);
+            PerformLayout();
         }
 
         #endregion
@@ -1085,5 +1149,10 @@
         private Label label31;
         private Label label30;
         private ComboBox cbPostStatus;
+        private ToolStrip toolStrip1;
+        private ToolStripButton btnAdminClose;
+        private ToolStripButton btnAdminMinimize;
+        private ToolStripButton btnAdminBack;
+        private ToolStripButton btnAdminRefresh;
     }
 }

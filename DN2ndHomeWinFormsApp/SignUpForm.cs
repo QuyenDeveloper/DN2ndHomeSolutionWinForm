@@ -16,25 +16,31 @@ namespace DN2ndHomeWinFormsApp
     {
         IUserRepository _userRepository;
         IAvatarReposity _avatarRepository;
+        private const int WM_NCHITTEST = 0x84;
+        private const int HTCLIENT = 0x1;
+        private const int HTCAPTION = 0x2;
+        private Point dragOffset;
+        protected override void WndProc(ref Message message)
+        {
+            base.WndProc(ref message);
+
+            if (message.Msg == WM_NCHITTEST && (int)message.Result == HTCLIENT)
+                message.Result = (IntPtr)HTCAPTION;
+        }
         public SignUpForm(IUserRepository userRepository, IAvatarReposity avatarReposity)
         {
             InitializeComponent();
             _userRepository = userRepository;
             _avatarRepository = avatarReposity;
         }
-
         private void btnSignIn_Click(object sender, EventArgs e)
         {
-            if (CheckVal() == 1)
-            {
-                return;
-            }
-
+            if (CheckVal() == 1) return;
             try
             {
-                SaveImage();
                 SaveUser();
-                MessageBox.Show("Sign up success!!!");
+                MessageBox.Show("Sign up success!!!", "Success", MessageBoxButtons.OK);
+                DialogResult = DialogResult.OK;
             }
             catch (Exception ex)
             {
@@ -49,28 +55,28 @@ namespace DN2ndHomeWinFormsApp
                 return ms.ToArray();
             }
         }
-
-        private void SaveImage()
+        private int SaveAvatar()
         {
-            string fileName = pbAvatar.Image.Tag.ToString();
-            string imageName = Path.GetFileName(fileName);
+            string avatarName = pbAvatar.Image.Tag.ToString();
+            int id = 0;
             try
             {
                 Avatar avatar = new Avatar
                 {
                     Avatar1 = ConvertImageToByte(pbAvatar.Image),
-                    AvatarName = imageName,
+                    AvatarName = avatarName,
                 };
-                _avatarRepository.AddNewAvatar(avatar);
+                id = _avatarRepository.AddNewAvatar(avatar);
             }
             catch (Exception ex)
             {
                 MessageBox.Show("Error: " + ex.Message);
             }
+            return id;
         }
         private void SaveUser()
         {
-            int id = _avatarRepository.GetLastID();
+            int id = SaveAvatar();
             try
             {
                 User user = new User
@@ -87,12 +93,6 @@ namespace DN2ndHomeWinFormsApp
             {
                 MessageBox.Show("Error: " + ex.Message);
             }
-        }
-
-        private void SignIn()
-        {
-
-
         }
         private int CheckVal()
         {
@@ -148,12 +148,6 @@ namespace DN2ndHomeWinFormsApp
             }
             return cancelState;
         }
-
-        private void SignInForm_Load(object sender, EventArgs e)
-        {
-
-        }
-
         private void pbAvatar_Click(object sender, EventArgs e)
         {
             try
@@ -162,11 +156,48 @@ namespace DN2ndHomeWinFormsApp
                 openFileDialog1.ShowDialog();
                 string filePath = openFileDialog1.FileName;
                 pbAvatar.Image = Image.FromFile(filePath);
-                pbAvatar.Image.Tag = filePath;
+                pbAvatar.Image.Tag = Path.GetFileName(filePath);
             }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message);
+            }
+        }
+        private void btnSignUpFormClose_Click(object sender, EventArgs e)
+        {
+            DialogResult = DialogResult.Cancel;
+        }
+        private void btnSignUpFormMinimize_Click(object sender, EventArgs e)
+        {
+            WindowState = FormWindowState.Minimized;
+        }
+        private void btnSignUpBack_Click(object sender, EventArgs e)
+        {
+            DialogResult = DialogResult.OK;
+        }
+        private void toolStrip1_MouseDown(object sender, MouseEventArgs e)
+        {
+            base.OnMouseDown(e);
+            if (e.Button == MouseButtons.Left)
+            {
+                dragOffset = this.PointToScreen(e.Location);
+                var formLocation = FindForm().Location;
+                dragOffset.X -= formLocation.X;
+                dragOffset.Y -= formLocation.Y;
+            }
+        }
+        private void toolStrip1_MouseMove(object sender, MouseEventArgs e)
+        {
+            base.OnMouseMove(e);
+
+            if (e.Button == MouseButtons.Left)
+            {
+                Point newLocation = this.PointToScreen(e.Location);
+
+                newLocation.X -= dragOffset.X;
+                newLocation.Y -= dragOffset.Y;
+
+                FindForm().Location = newLocation;
             }
         }
     }

@@ -33,8 +33,10 @@ namespace DN2ndHomeLibrary.DataManagament
             List<Ward> wards;
             try
             {
-                var DbContext = new dn2ndhomeManagementContext();
-                wards = DbContext.Wards.ToList();
+                using (var dbContext = new dn2ndhomeManagementContext())
+                { 
+                    wards = dbContext.Wards.ToList();
+                }
             }
             catch (Exception ex)
             {
@@ -47,11 +49,12 @@ namespace DN2ndHomeLibrary.DataManagament
             List<Ward> wards;
             try
             {
-                var DbContext = new dn2ndhomeManagementContext();
-
-                wards = DbContext.Wards
-                    .Where(ward => ward.DistrictId == districtID)
-                    .ToList();
+                using (var dbContext = new dn2ndhomeManagementContext())
+                {
+                    wards = dbContext.Wards
+                        .Where(ward => ward.DistrictId == districtID)
+                        .ToList();
+                }
             }
             catch(Exception ex)
             {
@@ -65,8 +68,10 @@ namespace DN2ndHomeLibrary.DataManagament
             Ward ward = null;
             try
             {
-                var DbContext = new dn2ndhomeManagementContext();
-                ward = DbContext.Wards.SingleOrDefault(ward => ward.WardId == id);
+                using (var dbContext = new dn2ndhomeManagementContext())
+                {
+                    ward = dbContext.Wards.SingleOrDefault(ward => ward.WardId == id);
+                }
             }
             catch (Exception ex)
             {
@@ -78,9 +83,11 @@ namespace DN2ndHomeLibrary.DataManagament
         {
             try
             {
-                var DbContext = new dn2ndhomeManagementContext();
-                DbContext.Wards.Add(ward);
-                DbContext.SaveChanges();
+                using (var dbContext = new dn2ndhomeManagementContext())
+                {
+                    dbContext.Wards.Add(ward);
+                    dbContext.SaveChanges();
+                }
             }
             catch (Exception ex)
             {
@@ -94,9 +101,11 @@ namespace DN2ndHomeLibrary.DataManagament
                 Ward _ward = GetWardByID(ward.WardId);
                 if (_ward != null)
                 {
-                    var DbContext = new dn2ndhomeManagementContext();
-                    DbContext.Entry(ward).State = EntityState.Modified;
-                    DbContext.SaveChanges();
+                    using (var dbContext = new dn2ndhomeManagementContext())
+                    {
+                        dbContext.Entry(ward).State = EntityState.Modified;
+                        dbContext.SaveChanges();
+                    }
                 }
                 else
                 {
@@ -116,9 +125,11 @@ namespace DN2ndHomeLibrary.DataManagament
                 Ward _ward = GetWardByID(ward.WardId);
                 if (_ward != null)
                 {
-                    var DbContext = new dn2ndhomeManagementContext();
-                    DbContext.Wards.Remove(ward);
-                    DbContext.SaveChanges();
+                    using (var dbContext = new dn2ndhomeManagementContext())
+                    {
+                        dbContext.Wards.Remove(ward);
+                        dbContext.SaveChanges();
+                    }
                 }
                 else { throw new Exception("The avatar does not exist"); }
             }

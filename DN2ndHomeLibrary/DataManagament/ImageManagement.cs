@@ -33,8 +33,10 @@ namespace DN2ndHomeLibrary.DataManagament
             List<Img> Images;
             try
             {
-                var DbContext = new dn2ndhomeManagementContext();
-                Images = DbContext.Imgs.ToList();
+                using (var dbContext = new dn2ndhomeManagementContext())
+                {
+                    Images = dbContext.Imgs.ToList();
+                }
             }
             catch (Exception ex)
             {
@@ -48,8 +50,10 @@ namespace DN2ndHomeLibrary.DataManagament
             List<Img> images = null;
             try
             {
-                var DbContext = new dn2ndhomeManagementContext();
-                images = DbContext.Imgs.Where(image => image.PrdId == id).ToList();
+                using (var dbContext = new dn2ndhomeManagementContext())
+                {
+                    images = dbContext.Imgs.Where(image => image.PrdId == id).ToList();
+                }
             }
             catch (Exception ex)
             {
@@ -62,8 +66,10 @@ namespace DN2ndHomeLibrary.DataManagament
             Img image = null;
             try
             {
-                var DbContext = new dn2ndhomeManagementContext();
-                image = DbContext.Imgs.SingleOrDefault(image => image.ImgId == id);
+                using (var dbContext = new dn2ndhomeManagementContext())
+                {
+                    image = dbContext.Imgs.SingleOrDefault(image => image.ImgId == id);
+                }
             }
             catch (Exception ex)
             {
@@ -75,9 +81,11 @@ namespace DN2ndHomeLibrary.DataManagament
         {   
             try
             {
-                var DbContext = new dn2ndhomeManagementContext();
-                DbContext.Imgs.Add(image);
-                DbContext.SaveChanges();
+                using (var dbContext = new dn2ndhomeManagementContext())
+                {
+                    dbContext.Imgs.Add(image);
+                    dbContext.SaveChanges();
+                }
             }
             catch (Exception ex)
             {
@@ -91,9 +99,11 @@ namespace DN2ndHomeLibrary.DataManagament
                 Img _image = GetImageByID(image.ImgId);
                 if (_image != null)
                 {
-                    var DbContext = new dn2ndhomeManagementContext();
-                    DbContext.Entry(image).State = EntityState.Modified;
-                    DbContext.SaveChanges();
+                    using (var dbContext = new dn2ndhomeManagementContext())
+                    {
+                        dbContext.Entry(image).State = EntityState.Modified;
+                        dbContext.SaveChanges();
+                    }
                 }
                 else
                 {
@@ -113,9 +123,11 @@ namespace DN2ndHomeLibrary.DataManagament
                 Img _image = GetImageByID(image.ImgId);
                 if (_image != null)
                 {
-                    var DbContext = new dn2ndhomeManagementContext();
-                    DbContext.Imgs.Remove(image);
-                    DbContext.SaveChanges();
+                    using (var dbContext = new dn2ndhomeManagementContext())
+                    {
+                        dbContext.Imgs.Remove(image);
+                        dbContext.SaveChanges();
+                    }
                 }
                 else { throw new Exception("This image does not exist"); }
             }
@@ -128,18 +140,19 @@ namespace DN2ndHomeLibrary.DataManagament
         {
             try
             {
-                var DbContext = new dn2ndhomeManagementContext();
-
-                var imagesToRemove = DbContext.Imgs.Where(img => img.PrdId == prdID).ToList();
-
-                if (imagesToRemove.Any())
+                using (var dbContext = new dn2ndhomeManagementContext())
                 {
-                    DbContext.Imgs.RemoveRange(imagesToRemove);
-                    DbContext.SaveChanges();
-                }
-                else
-                {
-                    throw new Exception("No images found with the specified prdID");
+                    var imagesToRemove = dbContext.Imgs.Where(img => img.PrdId == prdID).ToList();
+
+                    if (imagesToRemove.Any())
+                    {
+                        dbContext.Imgs.RemoveRange(imagesToRemove);
+                        dbContext.SaveChanges();
+                    }
+                    else
+                    {
+                        throw new Exception("No images found with the specified prdID");
+                    }
                 }
             }
             catch (Exception ex)

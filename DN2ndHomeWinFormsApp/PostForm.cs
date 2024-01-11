@@ -20,6 +20,17 @@ namespace DN2ndHomeWinFormsApp
         private IWardRepository _wardRepository;
         private IImageRepository _imageRepository;
         BindingSource districtBindingSource, wardBindingSource;
+        private const int WM_NCHITTEST = 0x84;
+        private const int HTCLIENT = 0x1;
+        private const int HTCAPTION = 0x2;
+        private Point dragOffset;
+        protected override void WndProc(ref Message message)
+        {
+            base.WndProc(ref message);
+
+            if (message.Msg == WM_NCHITTEST && (int)message.Result == HTCLIENT)
+                message.Result = (IntPtr)HTCAPTION;
+        }
         public PostForm(User CurrentUser, IPostRepository postRepository, IDistrictRepository districtRepository, IWardRepository wardRepository, IImageRepository imageRepository)
         {
             InitializeComponent();
@@ -94,8 +105,8 @@ namespace DN2ndHomeWinFormsApp
                         });
                     }
                 }
+                MessageBox.Show("Đăng thành công!!!", "Thành công", MessageBoxButtons.OK);
                 DialogResult = DialogResult.OK;
-                Close();
             }
             catch (Exception ex)
             {
@@ -103,15 +114,11 @@ namespace DN2ndHomeWinFormsApp
             }
 
         }//done
-        private void showTest(PrdInfo p)
-        {
-            MessageBox.Show("Title: " + p.PrdTitle + ", Detail: " + p.PrdDetail + ", Area: " + p.Area + ", Booked: " + p.Booked + ", DetailAddress: " + p.DetailAddress + ", DistrictID: " + p.DistrictId + ", Price: " + p.Price + ", WardID: " + p.WardId + ", Userid: " + p.UserId);
-        }
         private void btnCancel_Click(object sender, EventArgs e)
         {
             DialogResult = DialogResult.OK;
         }//done
-        private void LoadDistrict()
+        private void LoadDistrict()//done
         {
             try
             {
@@ -129,8 +136,8 @@ namespace DN2ndHomeWinFormsApp
             {
                 MessageBox.Show("Error: " + ex.Message);
             }
-        }//done
-        private void LoadWard()
+        }
+        private void LoadWard()//done
         {
             try
             {
@@ -154,8 +161,8 @@ namespace DN2ndHomeWinFormsApp
             {
                 MessageBox.Show("Error: " + ex.Message);
             }
-        }//done
-        private void pbPost1_Click(object sender, EventArgs e)
+        }
+        private void pbPost1_Click(object sender, EventArgs e)//done
         {
             PictureBox clickedPictureBox = sender as PictureBox;
             try
@@ -170,14 +177,51 @@ namespace DN2ndHomeWinFormsApp
             {
                 MessageBox.Show(ex.Message);
             }
-        }//done
-        private byte[] ConvertImageToByte(Image image)
+        }
+        private byte[] ConvertImageToByte(Image image)//done
         {
             using (MemoryStream ms = new MemoryStream())
             {
                 image.Save(ms, System.Drawing.Imaging.ImageFormat.Png);
                 return ms.ToArray();
             }
-        }//done
+        }
+        private void toolStrip1_MouseDown(object sender, MouseEventArgs e)//done
+        {
+            base.OnMouseDown(e);
+            if (e.Button == MouseButtons.Left)
+            {
+                dragOffset = this.PointToScreen(e.Location);
+                var formLocation = FindForm().Location;
+                dragOffset.X -= formLocation.X;
+                dragOffset.Y -= formLocation.Y;
+            }
+        }
+        private void toolStrip1_MouseMove(object sender, MouseEventArgs e)//done
+        {
+            base.OnMouseMove(e);
+
+            if (e.Button == MouseButtons.Left)
+            {
+                Point newLocation = this.PointToScreen(e.Location);
+
+                newLocation.X -= dragOffset.X;
+                newLocation.Y -= dragOffset.Y;
+
+                FindForm().Location = newLocation;
+            }
+        }
+        private void btnPostFormClose_Click(object sender, EventArgs e)//done
+        {
+            DialogResult = DialogResult.Cancel;
+        }
+        private void btnPostFormMinimize_Click(object sender, EventArgs e)//done
+        {
+            WindowState = FormWindowState.Minimized;
+        }
+        private void btnPostFormBack_Click(object sender, EventArgs e)//done
+        {
+            DialogResult = DialogResult.OK;
+        }
     }
 }

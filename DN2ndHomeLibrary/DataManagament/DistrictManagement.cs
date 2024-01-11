@@ -33,8 +33,10 @@ namespace DN2ndHomeLibrary.DataManagament
             List<District> districts;
             try
             {
-                var DbContext = new dn2ndhomeManagementContext();
-                districts = DbContext.Districts.ToList();
+                using (var dbContext = new dn2ndhomeManagementContext())
+                {
+                    districts = dbContext.Districts.ToList();
+                }
             }
             catch (Exception ex)
             {
@@ -48,8 +50,10 @@ namespace DN2ndHomeLibrary.DataManagament
             District district = null;
             try
             {
-                var DbContext = new dn2ndhomeManagementContext();
-                district = DbContext.Districts.SingleOrDefault(district => district.DistrictId == id);
+                using (var dbContext = new dn2ndhomeManagementContext())
+                {
+                    district = dbContext.Districts.SingleOrDefault(district => district.DistrictId == id);
+                }
             }
             catch (Exception ex)
             {
@@ -61,9 +65,11 @@ namespace DN2ndHomeLibrary.DataManagament
         {
             try
             {
-                var DbContext = new dn2ndhomeManagementContext();
-                DbContext.Districts.Add(district);
-                DbContext.SaveChanges();
+                using (var dbContext = new dn2ndhomeManagementContext())
+                {
+                    dbContext.Districts.Add(district);
+                    dbContext.SaveChanges();
+                }
             }
             catch (Exception ex)
             {
@@ -77,9 +83,11 @@ namespace DN2ndHomeLibrary.DataManagament
                 District _district = GetDistrictByID(district.DistrictId);
                 if (_district != null)
                 {
-                    var DbContext = new dn2ndhomeManagementContext();
-                    DbContext.Entry(district).State = EntityState.Modified;
-                    DbContext.SaveChanges();
+                    using (var dbContext = new dn2ndhomeManagementContext())
+                    {
+                        dbContext.Entry(district).State = EntityState.Modified;
+                        dbContext.SaveChanges();
+                    }
                 }
                 else
                 {
@@ -99,9 +107,11 @@ namespace DN2ndHomeLibrary.DataManagament
                 District _district = GetDistrictByID(district.DistrictId);
                 if (_district != null)
                 {
-                    var DbContext = new dn2ndhomeManagementContext();
-                    DbContext.Districts.Remove(district);
-                    DbContext.SaveChanges();
+                    using (var dbContext = new dn2ndhomeManagementContext())
+                    {
+                        dbContext.Districts.Remove(district);
+                        dbContext.SaveChanges();
+                    }
                 }
                 else { throw new Exception("The avatar does not exist"); }
             }

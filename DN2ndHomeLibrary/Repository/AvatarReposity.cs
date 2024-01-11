@@ -13,8 +13,8 @@ namespace DN2ndHomeLibrary.Repository
         public Avatar GetAvatarByID(int id) => AvatarManagemant.Instance.GetAvatarByID(id);
         public int GetLastID() => AvatarManagemant.Instance.GetLastID();
         public IEnumerable<Avatar> GetAvatars() => AvatarManagemant.Instance.GetAvatarList();
-        public void AddNewAvatar(Avatar avatar) => AvatarManagemant.Instance.AddNewAvatar(avatar);
-        public void Remove(Avatar avatar) => AvatarManagemant.Instance.Remove(avatar);
+        public int AddNewAvatar(Avatar avatar) => AvatarManagemant.Instance.AddNewAvatar(avatar);
+        public void Remove(int id) => AvatarManagemant.Instance.Remove(id);
         public void Update(Avatar avatar) => AvatarManagemant.Instance.Update(avatar);
     }
 }

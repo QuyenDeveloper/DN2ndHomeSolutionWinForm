@@ -21,11 +21,23 @@ namespace DN2ndHomeWinFormsApp
         private IDistrictRepository _districtRepository;
         private IWardRepository _wardRepository;
         private IImageRepository _imageRepository;
-        BindingSource userBindingSource, 
-            postBindingSource, 
-            districtBindingSource, 
-            wardBindingSource, 
-            cboNewDistrictBindingSource, 
+        private IAvatarReposity _avatarRepository;
+        private const int WM_NCHITTEST = 0x84;
+        private const int HTCLIENT = 0x1;
+        private const int HTCAPTION = 0x2;
+        private Point dragOffset;
+        protected override void WndProc(ref Message message)
+        {
+            base.WndProc(ref message);
+
+            if (message.Msg == WM_NCHITTEST && (int)message.Result == HTCLIENT)
+                message.Result = (IntPtr)HTCAPTION;
+        }
+        BindingSource userBindingSource,
+            postBindingSource,
+            districtBindingSource,
+            wardBindingSource,
+            cboNewDistrictBindingSource,
             cboDistrictBindingSource,
             DistrictForPostBindingSource,
             WardForPostBindingSource;
@@ -34,7 +46,8 @@ namespace DN2ndHomeWinFormsApp
             User CurrentUser,
             IDistrictRepository districtRepository,
             IWardRepository wardRepository,
-            IImageRepository imageRepository)
+            IImageRepository imageRepository,
+            IAvatarReposity avatarReposity)
         {
             InitializeComponent();
             _CurrentUser = CurrentUser;
@@ -43,6 +56,7 @@ namespace DN2ndHomeWinFormsApp
             _districtRepository = districtRepository;
             _wardRepository = wardRepository;
             _imageRepository = imageRepository;
+            _avatarRepository = avatarReposity;
         }
         private void AdminForm_Load(object sender, EventArgs e)
         {
@@ -50,6 +64,10 @@ namespace DN2ndHomeWinFormsApp
             LoadUserList(users);
         }
         private void tabControl1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            Loading();
+        }
+        private void Loading()
         {
             if (tabControl1.SelectedTab == tPUserMa)
             {
@@ -70,9 +88,30 @@ namespace DN2ndHomeWinFormsApp
                 LoadDistrictComboBox();
             }
         }
-        private void AdminForm_FormClosed(object sender, FormClosedEventArgs e)
+        private void toolStrip1_MouseDown(object sender, MouseEventArgs e)
         {
-            DialogResult = DialogResult.OK;
+            base.OnMouseDown(e);
+            if (e.Button == MouseButtons.Left)
+            {
+                dragOffset = this.PointToScreen(e.Location);
+                var formLocation = FindForm().Location;
+                dragOffset.X -= formLocation.X;
+                dragOffset.Y -= formLocation.Y;
+            }
+        }
+        private void toolStrip1_MouseMove(object sender, MouseEventArgs e)
+        {
+            base.OnMouseMove(e);
+
+            if (e.Button == MouseButtons.Left)
+            {
+                Point newLocation = this.PointToScreen(e.Location);
+
+                newLocation.X -= dragOffset.X;
+                newLocation.Y -= dragOffset.Y;
+
+                FindForm().Location = newLocation;
+            }
         }
         //Start of UserManagement tab
         private void LoadUserList(IEnumerable<User> users)
@@ -112,28 +151,42 @@ namespace DN2ndHomeWinFormsApp
             {
                 MessageBox.Show($"Error: {ex.Message}\nStackTrace: {ex.StackTrace}", "Error Loading User List");
             }
-        } //done
+        } //done 
         private User GetSelectedUser()
         {
-            User user = new User
+            User user = null;
+            try
             {
-                UserId = int.Parse(tbUserID.Text),
-                UserName = tbUserName.Text,
-                AvatarId = int.Parse(tbAvatarID.Text),
-                Phone = tbPhone.Text,
-                Email = tbEmail.Text,
-                Password = tbPassword.Text,
-                UserLevel = int.Parse(tbUserLV.Text),
-                CreateAt = DateTime.Parse(tbCreatedDate.Text)
-            };
+                user = new User
+                {
+                    UserId = int.Parse(tbUserID.Text),
+                    UserName = tbUserName.Text,
+                    AvatarId = int.Parse(tbAvatarID.Text),
+                    Phone = tbPhone.Text,
+                    Email = tbEmail.Text,
+                    Password = tbPassword.Text,
+                    UserLevel = int.Parse(tbUserLV.Text),
+                    CreateAt = DateTime.Parse(tbCreatedDate.Text)
+                };
+            }
+            catch (FormatException ex)
+            {
+                MessageBox.Show($"Error parsing input: {ex.Message}");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"An unexpected error occurred: {ex.Message}");
+            }
             return user;
-        }  //done
+        }
         private void btnUserUpdate_Click(object sender, EventArgs e)
         {
             User user = GetSelectedUser();
             try
             {
                 _userRepository.Update(user);
+                var users = _userRepository.GetUsers();
+                LoadUserList(users);
                 MessageBox.Show("Update Success");
             }
             catch (Exception ex)
@@ -147,6 +200,10 @@ namespace DN2ndHomeWinFormsApp
             try
             {
                 _userRepository.Remove(user);
+                _avatarRepository.Remove((int)user.AvatarId);
+                _postRepository.RemoveAllByUserID(user.UserId);
+                var users = _userRepository.GetUsers();
+                LoadUserList(users);
                 MessageBox.Show("Delete Success");
             }
             catch (Exception ex)
@@ -190,39 +247,49 @@ namespace DN2ndHomeWinFormsApp
             tbPrice.DataBindings.Add("Text", postBindingSource, "Price");
             tbArea.DataBindings.Add("Text", postBindingSource, "Area");
 
+            cbPostStatus.DisplayMember = "Text";
+            cbPostStatus.ValueMember = "Value";
             cbPostStatus.DataSource = new List<object>
             {
                 new { Text = "Chưa duyệt", Value = 1 },
                 new { Text = "Duyệt", Value = 2 }
             };
-
-            cbPostStatus.DisplayMember = "Text";
-            cbPostStatus.ValueMember = "Value";
             cbPostStatus.DataBindings.Add("SelectedValue", postBindingSource, "PrdStatus");
+            cbPostStatus.SelectedValueChanged += CbPostStatus_SelectedValueChanged;
 
             tbDetailAddress.DataBindings.Add("Text", postBindingSource, "DetailAddress");
             LoadDistrictForPostComboBox();
             LoadWardForPostComboBox();
             tbUserIDForPost.DataBindings.Add("Text", postBindingSource, "UserID");
-            
+
+            cbBooked.DisplayMember = "Text";
+            cbBooked.ValueMember = "Value";
             cbBooked.DataSource = new List<object>
             {
                 new { Text = "Trống", Value = 1 },
                 new { Text = "Đầy", Value = 2 }
             };
-
-            cbBooked.DisplayMember = "Text";
-            cbBooked.ValueMember = "Value";
             cbBooked.DataBindings.Add("SelectedValue", postBindingSource, "Booked");
+            cbBooked.SelectedValueChanged += CbBooked_SelectedValueChanged;
+
             tbCreateDateForPost.DataBindings.Add("Text", postBindingSource, "CreateDay");
 
             postDataGridView.DataSource = postBindingSource;
-
             postDataGridView.SelectionChanged += (sender, e) =>
             {
                 if (postDataGridView.CurrentRow != null)
                     postBindingSource.Position = postDataGridView.CurrentRow.Index;
             };
+        }
+        private void CbBooked_SelectedValueChanged(object? sender, EventArgs e)
+        {
+            PrdInfo prdInfo = (PrdInfo)postDataGridView.CurrentRow.DataBoundItem;
+            prdInfo.Booked = (int)cbBooked.SelectedValue;
+        }
+        private void CbPostStatus_SelectedValueChanged(object? sender, EventArgs e)
+        {
+            PrdInfo prdInfo = (PrdInfo)postDataGridView.CurrentRow.DataBoundItem;
+            prdInfo.PrdStatus = (int)cbPostStatus.SelectedValue;
         }
         private void btnNewPost_Click(object sender, EventArgs e)
         {
@@ -236,7 +303,16 @@ namespace DN2ndHomeWinFormsApp
         }//done
         private void btnUpdatePost_Click(object sender, EventArgs e)
         {
-
+            try
+            {
+                PrdInfo prdInfo = GetSelectedPost();
+                _postRepository.Update(prdInfo);
+                LoadPosts();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error: " + ex.Message);
+            }
         }//not done
         private void btnDeletePost_Click(object sender, EventArgs e)
         {
@@ -246,7 +322,8 @@ namespace DN2ndHomeWinFormsApp
                 _postRepository.Remove(prdInfo);
                 _imageRepository.RemoveImagesByPrdID(prdInfo.PrdId);
                 LoadPosts();
-            }catch (Exception ex)
+            }
+            catch (Exception ex)
             {
                 MessageBox.Show("Error: " + ex.Message);
             }
@@ -292,13 +369,13 @@ namespace DN2ndHomeWinFormsApp
             PrdInfo prdInfo = new PrdInfo
             {
                 Area = int.Parse(tbArea.Text),
-                Booked = int.Parse(cbBooked.Text),
+                Booked = int.Parse(cbBooked.SelectedValue.ToString()),
                 CreateDay = DateTime.Parse(tbCreateDateForPost.Text),
                 DetailAddress = tbDetailAddress.Text,
                 DistrictId = int.Parse(cbDistrictForPost.SelectedValue.ToString()),
                 PrdDetail = tbDetail.Text,
                 PrdId = int.Parse(tbPrdID.Text),
-                PrdStatus = int.Parse(cbPostStatus.Text),
+                PrdStatus = int.Parse(cbPostStatus.SelectedValue.ToString()),
                 PrdTitle = tbTitle.Text,
                 Price = decimal.Parse(tbPrice.Text),
                 UserId = int.Parse(tbUserIDForPost.Text),
@@ -501,6 +578,18 @@ namespace DN2ndHomeWinFormsApp
                 MessageBox.Show("Error: " + ex.Message);
             }
         }//done
-        //End of WardManagement tab
+         //End of WardManagement tab
+        private void btnAdminClose_Click(object sender, EventArgs e)
+        {
+            DialogResult = DialogResult.Cancel;
+        }
+        private void btnAdminBack_Click(object sender, EventArgs e)
+        {
+            DialogResult = DialogResult.OK;
+        }
+        private void btnAdminRefresh_Click(object sender, EventArgs e)
+        {
+            Loading();
+        }
     }
 }

@@ -33,8 +33,10 @@ namespace DN2ndHomeLibrary.DataManagament
             List<Avatar> avatars;
             try
             {
-                var DbContext = new dn2ndhomeManagementContext();
-                avatars = DbContext.Avatars.ToList();
+                using (var dbContext = new dn2ndhomeManagementContext())
+                {
+                    avatars = dbContext.Avatars.ToList();
+                }
             }
             catch (Exception ex)
             {
@@ -48,8 +50,10 @@ namespace DN2ndHomeLibrary.DataManagament
             Avatar avatar = null;
             try
             {
-                var DbContext = new dn2ndhomeManagementContext();
-                avatar = DbContext.Avatars.SingleOrDefault(avatar => avatar.AvatarId == id);
+                using (var dbContext = new dn2ndhomeManagementContext())
+                {
+                    avatar = dbContext.Avatars.SingleOrDefault(avatar => avatar.AvatarId == id);
+                }
             }
             catch (Exception ex)
             {
@@ -62,8 +66,10 @@ namespace DN2ndHomeLibrary.DataManagament
             int lastAvatarId = 0;
             try
             {
-                var DbContext = new dn2ndhomeManagementContext();
-                lastAvatarId = DbContext.Avatars.OrderByDescending(a => a.AvatarId).Select(a => a.AvatarId).FirstOrDefault();
+                using (var dbContext = new dn2ndhomeManagementContext())
+                {
+                    lastAvatarId = dbContext.Avatars.OrderByDescending(a => a.AvatarId).Select(a => a.AvatarId).FirstOrDefault();
+                }
             }
             catch (Exception ex)
             {
@@ -71,19 +77,23 @@ namespace DN2ndHomeLibrary.DataManagament
             }
             return lastAvatarId;
         }
-        public void AddNewAvatar(Avatar avatar)
+        public int AddNewAvatar(Avatar avatar)
         {
             try
             {
-                var DbContext = new dn2ndhomeManagementContext();
-                DbContext.Avatars.Add(avatar);
-                DbContext.SaveChanges();
+                using (var dbContext = new dn2ndhomeManagementContext())
+                {
+                    dbContext.Avatars.Add(avatar);
+                    dbContext.SaveChanges();
+                    return avatar.AvatarId;
+                }
             }
             catch (Exception ex)
             {
-                throw new Exception(ex.Message);
+                throw new Exception("Error adding avatar: " + ex.Message);
             }
         }
+
         public void Update(Avatar avatar)
         {
             try
@@ -91,9 +101,11 @@ namespace DN2ndHomeLibrary.DataManagament
                 Avatar _avatar = GetAvatarByID(avatar.AvatarId);
                 if (_avatar != null)
                 {
-                    var DbContext = new dn2ndhomeManagementContext();
-                    DbContext.Entry(avatar).State = EntityState.Modified;
-                    DbContext.SaveChanges();
+                    using (var dbContext = new dn2ndhomeManagementContext())
+                    {
+                        dbContext.Entry(avatar).State = EntityState.Modified;
+                        dbContext.SaveChanges();
+                    }
                 }
                 else
                 {
@@ -106,16 +118,18 @@ namespace DN2ndHomeLibrary.DataManagament
             }
         }
 
-        public void Remove(Avatar avatar)
+        public void Remove(int id)
         {
             try
             {
-                Avatar _avatar = GetAvatarByID(avatar.AvatarId);
+                Avatar _avatar = GetAvatarByID(id);
                 if (_avatar != null)
                 {
-                    var DbContext = new dn2ndhomeManagementContext();
-                    DbContext.Avatars.Remove(avatar);
-                    DbContext.SaveChanges();
+                    using (var dbContext = new dn2ndhomeManagementContext())
+                    {
+                        dbContext.Avatars.Remove(_avatar);
+                        dbContext.SaveChanges();
+                    }
                 }
                 else { throw new Exception("The avatar does not exist"); }
             }

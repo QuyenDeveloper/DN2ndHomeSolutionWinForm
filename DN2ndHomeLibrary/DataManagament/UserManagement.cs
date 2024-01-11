@@ -34,8 +34,10 @@ namespace DN2ndHomeLibrary.DataManagament
             List<User> users;
             try
             {
-                var DbContext = new dn2ndhomeManagementContext();
-                users = DbContext.Users.ToList();
+                using (var dbContext = new dn2ndhomeManagementContext())
+                { 
+                    users = dbContext.Users.ToList();
+                }
             }
             catch (Exception ex)
             {
@@ -48,12 +50,12 @@ namespace DN2ndHomeLibrary.DataManagament
             List<User> users;
             try
             {
-                var DbContext = new dn2ndhomeManagementContext();
-
-                // Use LINQ to filter users by name using LIKE
-                users = DbContext.Users
+                using (var dbContext = new dn2ndhomeManagementContext())
+                { 
+                    users = dbContext.Users
                     .Where(user => user.UserName.Contains(searchName))
                     .ToList();
+                }
             }
             catch (Exception ex)
             {
@@ -67,8 +69,10 @@ namespace DN2ndHomeLibrary.DataManagament
             User user = null;
             try
             {
-                var DbContext = new dn2ndhomeManagementContext();
-                user = DbContext.Users.SingleOrDefault(user => user.UserId == user_id);
+                using (var dbContext = new dn2ndhomeManagementContext())
+                {
+                    user = dbContext.Users.SingleOrDefault(user => user.UserId == user_id);
+                }
             }
             catch (Exception ex)
             {
@@ -84,9 +88,11 @@ namespace DN2ndHomeLibrary.DataManagament
                 User _user = GetUserByID(user.UserId);
                 if (_user == null)
                 {
-                    var DbContext = new dn2ndhomeManagementContext();
-                    DbContext.Users.Add(user);
-                    DbContext.SaveChanges();
+                    using (var dbContext = new dn2ndhomeManagementContext())
+                    {
+                        dbContext.Users.Add(user);
+                        dbContext.SaveChanges();
+                    }
                 }
                 else
                 {
@@ -105,9 +111,11 @@ namespace DN2ndHomeLibrary.DataManagament
                 User u = GetUserByID(user.UserId);
                 if (u != null)
                 {
-                    var DbContext = new dn2ndhomeManagementContext();
-                    DbContext.Entry(user).State = EntityState.Modified;
-                    DbContext.SaveChanges();
+                    using (var dbContext = new dn2ndhomeManagementContext())
+                    {
+                        dbContext.Entry(user).State = EntityState.Modified;
+                        dbContext.SaveChanges();
+                    }
                 }
                 else
                 {
@@ -127,9 +135,11 @@ namespace DN2ndHomeLibrary.DataManagament
                 User _user = GetUserByID(user.UserId);
                 if (_user != null)
                 {
-                    var DbContext = new dn2ndhomeManagementContext();
-                    DbContext.Users.Remove(user);
-                    DbContext.SaveChanges();
+                    using (var dbContext = new dn2ndhomeManagementContext())
+                    {
+                        dbContext.Users.Remove(user);
+                        dbContext.SaveChanges();
+                    }
                 }
                 else { throw new Exception("The user does not exist"); }
             }
@@ -144,8 +154,10 @@ namespace DN2ndHomeLibrary.DataManagament
             User user = null;
             try
             {
-                var DbContext = new dn2ndhomeManagementContext();
-                user = DbContext.Users.SingleOrDefault(user => user.UserName == username && user.Password == password);
+                using (var dbContext = new dn2ndhomeManagementContext())
+                { 
+                    user = dbContext.Users.SingleOrDefault(user => user.UserName == username && user.Password == password);
+                }
             }
             catch (Exception ex)
             {

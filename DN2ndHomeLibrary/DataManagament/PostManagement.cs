@@ -43,6 +43,20 @@ namespace DN2ndHomeLibrary.DataManagament
             }
             return prdInfos;
         }
+        public IEnumerable<PrdInfo> GetPrdInfosByPrdStatus(int status)
+        {
+            List<PrdInfo> prdInfos;
+            try
+            {
+                var DbContext = new dn2ndhomeManagementContext();
+                prdInfos = DbContext.PrdInfos.Where(prdInfo => prdInfo.PrdStatus == status).ToList();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            return prdInfos;
+        }
         public PrdInfo GetPrdInfoByID(int id)
         {
             PrdInfo prdInfo = null;
@@ -90,7 +104,6 @@ namespace DN2ndHomeLibrary.DataManagament
                 throw new Exception(ex.Message);
             }
         }
-
         public void Remove(PrdInfo prdInfo)
         {
             try
@@ -98,15 +111,52 @@ namespace DN2ndHomeLibrary.DataManagament
                 PrdInfo _prdInfo = GetPrdInfoByID(prdInfo.PrdId);
                 if (_prdInfo != null)
                 {
-                    var DbContext = new dn2ndhomeManagementContext();
-                    DbContext.PrdInfos.Remove(prdInfo);
-                    DbContext.SaveChanges();
+                    using (var dbContext = new dn2ndhomeManagementContext())
+                    {
+                        dbContext.PrdInfos.Remove(prdInfo);
+                        dbContext.SaveChanges();
+                    }
                 }
             }
             catch (Exception ex)
             {
                 throw new Exception(ex.Message);
             }
+        }
+        public void RemoveAllByUserID(int userId)
+        {
+            try
+            {
+                using (var dbContext = new dn2ndhomeManagementContext())
+                {
+                    var prdInfosToRemove = dbContext.PrdInfos.Where(p => p.UserId == userId).ToList();
+
+                    foreach (var prdInfo in prdInfosToRemove)
+                    {
+                        dbContext.PrdInfos.Remove(prdInfo);
+                    }
+                    dbContext.SaveChanges();
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error removing PrdInfos: {ex.Message}");
+            }
+        }
+
+        public IEnumerable<PrdInfo> GetPrdInfosByUserID(int userID)
+        {
+            List<PrdInfo> prdInfos;
+            try
+            {
+                var DbContext = new dn2ndhomeManagementContext();
+                prdInfos = DbContext.PrdInfos.Where(prdInfo => prdInfo.UserId == userID).ToList();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            return prdInfos;
         }
     }
 }

@@ -12,8 +12,8 @@ namespace DN2ndHomeLibrary.Repository
         IEnumerable<Avatar> GetAvatars();
         int GetLastID();
         Avatar GetAvatarByID(int id);
-        void AddNewAvatar(Avatar avatar);
-        void Remove(Avatar avatar);
+        int AddNewAvatar(Avatar avatar);
+        void Remove(int id);
         void Update(Avatar avatar);
         
     }
